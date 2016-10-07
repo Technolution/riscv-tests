@@ -30,7 +30,7 @@ default: all
 
 RISCV_PREFIX ?= riscv$(XLEN)-unknown-elf-
 RISCV_GCC ?= $(RISCV_PREFIX)gcc
-RISCV_GCC_OPTS ?= -static -mcmodel=medany -fvisibility=hidden -nostdlib -nostartfiles
+RISCV_GCC_OPTS ?= -static -mcmodel=medany -fvisibility=hidden -nostdlib -nostartfiles -march=$(ARCH)
 RISCV_OBJDUMP ?= $(RISCV_PREFIX)objdump --disassemble-all --disassemble-zeroes --section=.text --section=.text.startup --section=.text.init --section=.data
 RISCV_SIM ?= spike
 
@@ -69,19 +69,38 @@ tests += $$($(1)_tests)
 endef
 
 $(eval $(call compile_template,rv32ui,-m32))
+ifeq ($(ENABLE_RVC),yes)
 $(eval $(call compile_template,rv32uc,-m32))
+endif
+ifeq ($(ENABLE_MULT),yes)
 $(eval $(call compile_template,rv32um,-m32))
+endif
+ifeq ($(ENABLE_ATOMIC),yes)
 $(eval $(call compile_template,rv32ua,-m32))
+endif
+ifeq ($(ENABLE_FLOAT),yes)
 $(eval $(call compile_template,rv32uf,-m32))
+endif
 $(eval $(call compile_template,rv32si,-m32))
 $(eval $(call compile_template,rv32mi,-m32))
+
 ifeq ($(XLEN),64)
 $(eval $(call compile_template,rv64ui))
+ifeq ($(ENABLE_RVC),yes)
 $(eval $(call compile_template,rv64uc))
+endif
+ifeq ($(ENABLE_MULT),yes)
 $(eval $(call compile_template,rv64um))
+endif
+ifeq ($(ENABLE_ATOMIC),yes)
 $(eval $(call compile_template,rv64ua))
+endif
+ifeq ($(ENABLE_FLOAT),yes)
 $(eval $(call compile_template,rv64uf))
+endif
+ifeq ($(ENABLE_DOUBLE),yes)
 $(eval $(call compile_template,rv64ud))
+endif
 $(eval $(call compile_template,rv64si))
 $(eval $(call compile_template,rv64mi))
 endif

@@ -50,12 +50,17 @@ HOST_COMP = gcc $(HOST_OPTS)
 
 RISCV_PREFIX ?= riscv$(XLEN)-unknown-elf-
 RISCV_GCC ?= $(RISCV_PREFIX)gcc
-RISCV_GCC_OPTS ?= -mcmodel=medany -static -std=gnu99 -O2 -ffast-math -fno-common -fno-builtin-printf
+RISCV_GCC_OPTS ?= -mcmodel=medany -static -std=gnu99 -O2 -ffast-math -fno-common -fno-builtin-printf -march=$(ARCH)
 RISCV_LINK ?= $(RISCV_GCC) -T $(src_dir)/common/test.ld $(incs)
 RISCV_LINK_MT ?= $(RISCV_GCC) -T $(src_dir)/common/test-mt.ld
-RISCV_LINK_OPTS ?= -nostdlib -nostartfiles -ffast-math -lgcc
+RISCV_LINK_OPTS ?= -nostdlib -nostartfiles -ffast-math -lgcc -march=$(ARCH)
 RISCV_OBJDUMP ?= $(RISCV_PREFIX)objdump --disassemble-all --disassemble-zeroes --section=.text --section=.text.startup --section=.data
 RISCV_SIM ?= spike
+
+ifneq (ENABLE_FLOAT, yes)
+RISCV_GCC_OPTS += -msoft-float
+RISCV_LINK_OPTS += -lm
+endif
 
 VPATH += $(addprefix $(src_dir)/, $(bmarks))
 VPATH += $(src_dir)/common

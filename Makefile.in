@@ -1,10 +1,17 @@
 prefix          := @prefix@
 abs_top_src_dir := @abs_top_srcdir@
-XLEN            := @XLEN@
 instbasedir     := $(DESTDIR)$(prefix)
 bmarkdir        := $(abs_top_src_dir)/benchmarks
 isa_src_dir     := $(abs_top_src_dir)/isa
 debug_src_dir   := $(abs_top_src_dir)/debug
+
+export XLEN            := @XLEN@
+export ENABLE_RVC      := @ENABLE_RVC@
+export ENABLE_MULT     := @ENABLE_MULT@
+export ENABLE_ATOMIC   := @ENABLE_ATOMIC@
+export ENABLE_FLOAT    := @ENABLE_FLOAT@
+export ENABLE_DOUBLE   := @ENABLE_DOUBLE@
+export ARCH            := @ARCH@
 
 all: benchmarks isa
 
@@ -16,20 +23,20 @@ install: all
 
 benchmarks:
 	mkdir -p benchmarks
-	$(MAKE) -C benchmarks -f $(bmarkdir)/Makefile src_dir=$(bmarkdir) XLEN=$(XLEN)
+	$(MAKE) -C benchmarks -f $(bmarkdir)/Makefile src_dir=$(bmarkdir)
 
 isa:
 	mkdir -p isa
-	$(MAKE) -C isa -f $(isa_src_dir)/Makefile src_dir=$(isa_src_dir) XLEN=$(XLEN)
+	$(MAKE) -C isa -f $(isa_src_dir)/Makefile src_dir=$(isa_src_dir)
 
 debug-check:
 	mkdir -p debug
-	$(MAKE) -C debug -f $(debug_src_dir)/Makefile src_dir=$(debug_src_dir) XLEN=$(XLEN)
+	$(MAKE) -C debug -f $(debug_src_dir)/Makefile src_dir=$(debug_src_dir)
 
 clean:
-	$(MAKE) -C isa -f $(isa_src_dir)/Makefile src_dir=$(isa_src_dir) clean
-	$(MAKE) -C benchmarks -f $(bmarkdir)/Makefile src_dir=$(bmarkdir) clean
-	$(MAKE) -C debug -f $(bmarkdir)/Makefile src_dir=$(debug_src_dir) clean
+	-$(MAKE) -C isa -f $(isa_src_dir)/Makefile src_dir=$(isa_src_dir) clean
+	-$(MAKE) -C benchmarks -f $(bmarkdir)/Makefile src_dir=$(bmarkdir) clean
+	-$(MAKE) -C debug -f $(bmarkdir)/Makefile src_dir=$(debug_src_dir) clean
 
 .PHONY: benchmarks isa clean
 
